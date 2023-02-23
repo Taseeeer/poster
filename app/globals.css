@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --background: rgba(0,0,0,0.8);
+}
+
+body {
+    font-size: 62.5%;
+    background: var(--background);
+    color: #f6f5f1;
+}
