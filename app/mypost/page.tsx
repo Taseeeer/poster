@@ -19,9 +19,6 @@ export default function Post() {
         queryKey: ["posts"]
     });
 
-    console.log(data);
-
-
     if(error) return error;
 
     return (

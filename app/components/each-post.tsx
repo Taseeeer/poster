@@ -4,20 +4,25 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import Image from "next/image";
 import React, { useState } from "react";
-import { CiTrash } from "react-icons/ci";
+import { CiCircleChevDown, CiCircleChevUp, CiTrash } from "react-icons/ci";
 import { toast, ToastContainer } from "react-toastify";
 import Comment from "./comment";
+import EachComment from "./each-comment";
+import EachLike from "./each-like";
 
 type propsData = {
     id: string,
     title: string,
     content: string,
-    user: any
+    user: any,
+    comment: Array,
+    like: Array
 }
 
-export default function EachPost({ id, title, content, user }: propsData) {
+export default function EachPost({ id, title, content, user, comment, like }: propsData) {
 
     const [ isComment, setIsComment ] = useState(false);
+    const [ showComments, setShowComments ] = useState(false);
 
     const { mutate } = useMutation(async (data) => await axios.post('/api/post/deletePost', { data }), {
         onSuccess: (data) => {
@@ -31,7 +36,6 @@ export default function EachPost({ id, title, content, user }: propsData) {
     const handleDelete = async (id: string) => {
         mutate(id)
     }
-
  
 
     return (
@@ -58,8 +62,22 @@ export default function EachPost({ id, title, content, user }: propsData) {
                     <CiTrash onClick={() => handleDelete(id)} className='text-red-500 cursor-pointer hover:scale-105 text-[1.5rem]' />
                 </div>
                 <p className='text-base p-2'>{content}</p> 
-                <button className='p-2 ml-2 my-2 bg-gray-100 text-base rounded' onClick={() => setIsComment(!isComment)}>Comment</button>
+
+                <div className='flex items-center p-2 bg-gray-100 w-max mx-2 rounded'>
+                    <div className='flex items-center gap-2'>
+                        { like.length }
+                        <EachLike id={id} userId={user.id} like={like} />
+                    </div>
+                    <div className='flex items-center gap-4 w-max bg-gray-100 p-2 mx-2 rounded'><p className='text-base'>{comment.length} comments on this post</p> <span onClick={() => setShowComments(!showComments)} className='text-2xl cursor-pointer'>{showComments ? <CiCircleChevUp /> : <CiCircleChevDown />}</span></div>
+                </div>
+                <section className='py-2'>
+                    { showComments && comment.map(comment => (
+                        <EachComment key={comment.id} {...comment} /> 
+                    ))}
+                </section>
+                
                 <Comment id={id} isComment={isComment} /> 
+                <button className='p-2 ml-2 m bg-gray-100 text-base rounded' onClick={() => setIsComment(!isComment)}>Comment</button>
             </div>
         </div>
     )

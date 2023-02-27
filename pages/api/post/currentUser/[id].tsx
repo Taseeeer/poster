@@ -1,7 +1,7 @@
 import prisma from '@/prisma/client';
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '../auth/[...nextauth]'
+import { authOptions } from '../../auth/[...nextauth]'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 
@@ -11,14 +11,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if(!session?.user) {
             return res.status(401).json({ msg: 'SignIn first to get post!'});
         }
+        const commentedUserId = req.query.id;
         
         try {
-            const result = await prisma.post.findMany({
-                include: {
-                    user: true,
-                    comment: true,
-                    like: true
-                }
+            const result = await prisma.user.findMany({
+                where: {
+                    id: commentedUserId
+                } 
             });
             res.status(200).json(result);
         } catch(e) {
@@ -27,4 +26,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     }
 }
+
 
